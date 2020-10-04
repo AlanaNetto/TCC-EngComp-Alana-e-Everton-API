@@ -1,0 +1,15 @@
+applications:
+- path: .
+  memory: 256M
+  instances: 1
+  domain: us-south.cf.appdomain.cloud
+  name: tcc-alana-everton
+  host: tcc-alana-everton
+  disk_quota: 1G
+  env:
+    DB_USERNAME: #{DB_USERNAME}#
+    DB_PASSWORD: #{DB_PASSWORD}#
+    DB_URL: #{DB_URL}#
+
+    
+  
