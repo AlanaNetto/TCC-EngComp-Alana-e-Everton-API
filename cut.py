@@ -25,7 +25,7 @@ db = client['dev']
 app = Flask("API_IMAGE_RECOGNITION_TCC")
 
 @app.route("/solution", methods=["POST"])
-def image_recognition():
+def solution_post():
     
     deviceID = request.form.get('deviceID')
     childInfo = request.form.get('childInfo')
@@ -181,6 +181,20 @@ def image_recognition():
 
     return Response(json.dumps(document_formatted), status=200,mimetype='application/json')
 
+@app.route("/solution", methods=["PUT"])
+def solution_put():
+    solutionID = request.form.get('solutionID')
+    correctSolution = request.form.get('correctSolution')
+    childInfo = request.form.get('childInfo')
+
+    if(not bool(solutionID) or not bool(correctSolution) or not bool(childInfo)):
+        return Response(json.dumps({"error":"404","msg": "Missing Info"}), status=404,mimetype='application/json')
+
+    document = db[solutionID]
+    document['correctSolution'] = (correctSolution == 'true' or correctSolution == 'True')
+    document['child'] = childInfo
+    document.save()
+    return Response(json.dumps({"msg": "Solution updated with success"}), status=200,mimetype='application/json')
 
 port = int(os.getenv("PORT", 8080))
 if __name__ == "__main__":
