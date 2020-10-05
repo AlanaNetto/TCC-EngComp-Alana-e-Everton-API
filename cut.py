@@ -190,6 +190,7 @@ def solution_put():
     if(not bool(solutionID) or not bool(correctSolution) or not bool(childInfo)):
         return Response(json.dumps({"error":"404","msg": "Missing Info"}), status=404,mimetype='application/json')
 
+    childInfo = json.loads(childInfo)
     document = db[solutionID]
     document['correctSolution'] = (correctSolution == 'true' or correctSolution == 'True')
     document['child'] = childInfo
