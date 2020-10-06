@@ -1,13 +1,20 @@
-import cv2
-import numpy as np
-import pytesseract as tess
-from flask import Flask, request, Response, jsonify
+# import cv2
+# import numpy as np
+# import pytesseract as tess
+from flask import Flask, request, Response, jsonify, render_template
+from collections import Counter
 from cloudant.client import Cloudant
 from cloudant.error import CloudantException
 from cloudant.result import Result, ResultByKey
 from waitress import serve
 import json
 import os
+
+# [REMOVER]
+os.environ['DB_USERNAME'] = '04bf3b13-17ae-40be-977d-c1bbbee31342-bluemix'
+os.environ['DB_PASSWORD'] = 'MuZ3UUX5QmcHi42fPmZaZUEBpVTs8PY9GZDUjkoDMuiW'
+os.environ['DB_URL'] = 'https://04bf3b13-17ae-40be-977d-c1bbbee31342-bluemix.cloudantnosqldb.appdomain.cloud'
+# [REMOVER]
 
 # Credenciais do cloudant
 serviceUsername =  os.getenv("DB_USERNAME") 
@@ -45,20 +52,20 @@ def solution_post():
     hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)    
     
     #purple color
-    low_purple = np.array([80, 80, 75])
-    high_purple = np.array([190, 220, 150])
+    low_purple = np.array([120, 80, 50])
+    high_purple = np.array([190, 220, 205])
     purple_mask = cv2.inRange(hsv_frame, low_purple, high_purple)
     purple = cv2.bitwise_and(frame, frame, mask=purple_mask)
 
     #orange color
-    low_orange = np.array([5, 120, 150])
+    low_orange = np.array([5, 120, 100])
     high_orange = np.array([15, 255, 230])
     orange_mask = cv2.inRange(hsv_frame, low_orange, high_orange)
     orange = cv2.bitwise_and(frame, frame, mask=orange_mask)
 
     #yellow color
-    low_yellow = np.array([20,30,135])
-    high_yellow = np.array([40,255,255])
+    low_yellow = np.array([15,80,70])
+    high_yellow = np.array([50,200,250])
     yellow_mask = cv2.inRange(hsv_frame, low_yellow, high_yellow)
     yellow = cv2.bitwise_and(frame, frame, mask=yellow_mask)
 
@@ -69,8 +76,8 @@ def solution_post():
     blue = cv2.bitwise_and(frame, frame, mask=blue_mask)
 
     #Green color
-    low_green = np.array([40, 70, 40])
-    high_green = np.array([100, 255, 200])
+    low_green = np.array([40, 80, 40])
+    high_green = np.array([100, 255, 160])
     green_mask = cv2.inRange(hsv_frame, low_green, high_green)
     green = cv2.bitwise_and(frame, frame, mask=green_mask)
 
@@ -87,7 +94,7 @@ def solution_post():
 
     for contour in (contours): 
         area = cv2.contourArea(contour) 
-        if(area > 25000): 
+        if(area > 3000): 
 
             x, y, w, h = cv2.boundingRect(contour)  
             crop_img_blue = blue[x:w, y:h]
@@ -99,7 +106,7 @@ def solution_post():
 
     for contour in (contours): 
         area = cv2.contourArea(contour) 
-        if(area > 8000):     
+        if(area > 1500):     
 
             x, y, w, h = cv2.boundingRect(contour)  
             crop_img = yellow[x:w, y:h]
@@ -111,7 +118,7 @@ def solution_post():
 
     for contour in (contours): 
         area = cv2.contourArea(contour) 
-        if(area > 25000): 
+        if(area > 3000): 
 
             x, y, w, h = cv2.boundingRect(contour)  
             crop_img = orange[x:w, y:h]
@@ -123,7 +130,7 @@ def solution_post():
 
     for contour in (contours): 
         area = cv2.contourArea(contour) 
-        if(area > 15000): 
+        if(area > 2500): 
         
             x, y, w, h = cv2.boundingRect(contour)  
             crop_img = purple[x:w, y:h]
@@ -135,11 +142,11 @@ def solution_post():
 
     for contour in (contours): 
         area = cv2.contourArea(contour) 
-        if(area > 20000):
+        if(area > 2000):
 
             x, y, w, h = cv2.boundingRect(contour)  
             #crop_img = green[y:y+h, int(x-((w-x)/6)):int(x+w+((w-x)/6))]
-            crop_img = green[y:y+h, int(x):int(x+w)]
+            crop_img = green[y:y+h, int(x+((w-x)/6)):int(x+w-((w-x)/6))]
             #cv2.drawContours(green, contours, 0, (0, 230, 255), 6)
             #if (crop_img.size > 0):
                 #cv2.imshow("teste verde", crop_img)
@@ -196,6 +203,42 @@ def solution_put():
     document['child'] = childInfo
     document.save()
     return Response(json.dumps({"msg": "Solution updated with success"}), status=200,mimetype='application/json')
+
+@app.route("/dashboard",methods=["GET"])
+def dashboards_get():
+    childID = request.args.get("childID")
+    blocos = []
+    fases = []
+    correctSolutions = []
+    childs = []
+    if childID is not None:
+        for document in db:
+            if document['device'] == childID :
+                blocos += document['solution']
+                # fases.append(document['level'])
+                correctSolutions.append(document['correctSolution'])
+                childs.append(document['child'])
+                
+    else:
+        for document in db:
+            blocos += document['solution']
+            # fases.append(document['level'])
+            correctSolutions.append(document['correctSolution'])
+            childs.append(document['child'])
+
+    blockCounter = Counter()
+    for bloco in blocos:
+        blockCounter[bloco["name"]] +=1
+
+    correctSolutionCounter = Counter()
+    for correct in correctSolutions:
+        if bool(correct):
+           correctSolutionCounter["Correto"] +=1 
+        else:
+            correctSolutionCounter["Incorreto"] +=1 
+    
+    return render_template('dashboard.html',blocos=list(blockCounter.items()), fases=fases,correctSolutions=list(correctSolutionCounter.items()),childs=childs)
+
 
 port = int(os.getenv("PORT", 8080))
 if __name__ == "__main__":

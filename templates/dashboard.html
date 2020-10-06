@@ -1,0 +1,67 @@
+<html>
+  <head>
+    <title>Relatório Aplicativo de Ensino de Lógica de Programação</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script>
+      var blocos = {{blocos|tojson}}
+      var fases = {{fases|tojson}}
+      var correctSolutions = {{correctSolutions|tojson}}
+      var childs = {{childs|tojson}}
+    </script>
+  </head>
+  <body>
+
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <a class="navbar-brand" href="#">Resiklaj</a>
+          </div>
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Home</a></li>
+          </ul>
+        </div>
+      </nav>
+
+    <h2 style="text-align: center;">Relatórios do Jogo</h2>
+    <div id="blocks-chart" style="margin: auto;"></div>
+
+    <div id="correctSolutions-chart" style="margin: auto;"></div>
+  
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        // Load google charts
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawBlocksChart);
+        google.charts.setOnLoadCallback(drawCorrectSolutionsChart);
+        
+        // Draw the chart and set the chart values
+        function drawBlocksChart() {
+            var dataConcat = [["Blocos", "Quantidade"]].concat(blocos) 
+          var data = google.visualization.arrayToDataTable(dataConcat);
+        
+          // Optional; add a title and set the width and height of the chart
+          var options = {'title':'Blocos Utilizados', 'height':400};
+        
+          // Display the chart inside the <div> element with id="piechart"
+          var chart = new google.visualization.PieChart(document.getElementById('blocks-chart'));
+          chart.draw(data, options);
+        }
+
+        function drawCorrectSolutionsChart() {
+            var dataConcat = [["Soluçoes", "Quantidade"]].concat(correctSolutions) 
+          var data = google.visualization.arrayToDataTable(dataConcat);
+        
+          // Optional; add a title and set the width and height of the chart
+          var options = {'title':'Soluções', 'height':400};
+        
+          // Display the chart inside the <div> element with id="piechart"
+          var chart = new google.visualization.PieChart(document.getElementById('correctSolutions-chart'));
+          chart.draw(data, options);
+        }
+        </script>
+  </body>
+</html>
