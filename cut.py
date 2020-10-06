@@ -1,6 +1,6 @@
-# import cv2
-# import numpy as np
-# import pytesseract as tess
+import cv2
+import numpy as np
+import pytesseract as tess
 from flask import Flask, request, Response, jsonify, render_template
 from collections import Counter
 from cloudant.client import Cloudant
@@ -9,12 +9,6 @@ from cloudant.result import Result, ResultByKey
 from waitress import serve
 import json
 import os
-
-# [REMOVER]
-os.environ['DB_USERNAME'] = '04bf3b13-17ae-40be-977d-c1bbbee31342-bluemix'
-os.environ['DB_PASSWORD'] = 'MuZ3UUX5QmcHi42fPmZaZUEBpVTs8PY9GZDUjkoDMuiW'
-os.environ['DB_URL'] = 'https://04bf3b13-17ae-40be-977d-c1bbbee31342-bluemix.cloudantnosqldb.appdomain.cloud'
-# [REMOVER]
 
 # Credenciais do cloudant
 serviceUsername =  os.getenv("DB_USERNAME") 

@@ -4,3 +4,4 @@ pytesseract
 flask
 waitress
 Cloudant
+Counter
