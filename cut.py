@@ -88,7 +88,7 @@ def solution_post():
 
     for contour in (contours): 
         area = cv2.contourArea(contour) 
-        if(area > 3000): 
+        if(area > 4000): 
 
             x, y, w, h = cv2.boundingRect(contour)  
             crop_img_blue = blue[x:w, y:h]
@@ -100,7 +100,7 @@ def solution_post():
 
     for contour in (contours): 
         area = cv2.contourArea(contour) 
-        if(area > 2000):     
+        if(area > 2250):     
 
             x, y, w, h = cv2.boundingRect(contour)  
             crop_img = yellow[x:w, y:h]
@@ -112,7 +112,7 @@ def solution_post():
 
     for contour in (contours): 
         area = cv2.contourArea(contour) 
-        if(area > 3000): 
+        if(area > 4000): 
 
             x, y, w, h = cv2.boundingRect(contour)  
             crop_img = orange[x:w, y:h]
@@ -124,7 +124,7 @@ def solution_post():
 
     for contour in (contours): 
         area = cv2.contourArea(contour) 
-        if(area > 3000): 
+        if(area > 4000): 
         
             x, y, w, h = cv2.boundingRect(contour)  
             crop_img = purple[x:w, y:h]
@@ -136,7 +136,7 @@ def solution_post():
 
     for contour in (contours): 
         area = cv2.contourArea(contour) 
-        if(area > 3000):
+        if(area > 4000):
 
             x, y, w, h = cv2.boundingRect(contour)  
             #crop_img = green[y:y+h, int(x-((w-x)/6)):int(x+w+((w-x)/6))]
